@@ -9,6 +9,7 @@
  * 
  * @author Owen Astrachan
  * @author Andres Montoya-Aristizabal
+ * @author Luke Evans
  */
 
 public class HuffProcessor {
