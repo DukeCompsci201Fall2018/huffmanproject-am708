@@ -1,3 +1,4 @@
+import java.util.*;
 
 /**
  * Although this class has a history of several years,
@@ -43,13 +44,49 @@ public class HuffProcessor {
 	 *            Buffered bit stream writing to the output file.
 	 */
 	public void compress(BitInputStream in, BitOutputStream out){
-
-		while (true){
-			int val = in.readBits(BITS_PER_WORD);
-			if (val == -1) break;
-			out.writeBits(BITS_PER_WORD, val);
-		}
+		
+		int[] counts = readForCounts(in);
+		HuffNode root = makeTreeFromCounts(counts);
+		String[] codings = makeCodingsFromTree(root);
+		
+		out.writeBits(BITS_PER_INT, HUFF_TREE);
+		writeHeader(root,out);
+		
+		in.reset();
+		writeCompressedBits(codings,in,out);
 		out.close();
+		
+	}
+	
+	public int[] readForCounts(BitInputStream input) {
+		int[] freq = new int[ALPH_SIZE + 1];
+		while (true) {
+			int value = input.readBits(BITS_PER_WORD);
+			if (value == -1) {
+				break;
+			}
+			freq[value]++;
+		}
+		
+		freq[PSEUDO_EOF] = 1;
+		return freq;
+	}
+	
+	public HuffNode makeTreeFromCounts(int[] freq) {
+		PriorityQueue<HuffNode> pq = new PriorityQueue<>();
+
+		for(int index = 0; index < freq.length; index++) {
+		    pq.add(new HuffNode(index,freq[index],null,null));
+		}
+
+		while (pq.size() > 1) {
+		    HuffNode left = pq.remove();
+		    HuffNode right = pq.remove();
+		    HuffNode t = new HuffNode(0,left.myWeight + right.myWeight, left, right);
+		    pq.add(t);
+		}
+		HuffNode root = pq.remove();
+		return root;
 	}
 	/**
 	 * Decompresses a file. Output file must be identical bit-by-bit to the
@@ -74,7 +111,7 @@ public class HuffProcessor {
 		out.close();
 	}
 	
-	private HuffNode readTreeHeader(BitInputStream in) {
+	public HuffNode readTreeHeader(BitInputStream in) {
 		int bit = in.readBits(1);
 		if (bit == -1) {
 			throw new HuffException("bottom error illegal header starts with " +bit);
@@ -114,6 +151,12 @@ public class HuffProcessor {
 	}
 	/*
 	 * while (true){
+			int val = in.readBits(BITS_PER_WORD);
+			if (val == -1) break;
+			out.writeBits(BITS_PER_WORD, val);
+		}
+		out.close();
+		while (true){
 			int val = in.readBits(BITS_PER_WORD);
 			if (val == -1) break;
 			out.writeBits(BITS_PER_WORD, val);
