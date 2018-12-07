@@ -57,7 +57,7 @@ public class HuffProcessor {
 		out.close();
 		
 	}
-	
+
 	public int[] readForCounts(BitInputStream input) {
 		int[] freq = new int[ALPH_SIZE + 1];
 		while (true) {
@@ -121,6 +121,11 @@ public class HuffProcessor {
 		//WRITE MAGIC NUMBER
 		//WRITE MAGIC NUMBER
 	}
+
+	private void writeCompressedBits(String[] codings, BitInputStream in, BitOutputStream out) {
+		
+	}
+
 	/**
 	 * Decompresses a file. Output file must be identical bit-by-bit to the
 	 * original.
