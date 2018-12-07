@@ -114,6 +114,12 @@ public class HuffProcessor {
 		out.writeBits(1, 0); //DOUBLE CHECK THIS CALL
 		writeHeader(hn.myLeft, out);
 		writeHeader(hn.myRight, out);
+		
+		//WRITE THE MAGIC NUMBER DUMMY
+		//WRITE MAGIC NUMBER
+		//WRITE MAGIC NUMBER
+		//WRITE MAGIC NUMBER
+		//WRITE MAGIC NUMBER
 	}
 	/**
 	 * Decompresses a file. Output file must be identical bit-by-bit to the
@@ -163,13 +169,15 @@ public class HuffProcessor {
 		           throw new HuffException("bad input, no PSEUDO_EOF");
 		       }
 		       else { 
-		           if (bits == 0) current = current.myLeft;
-		      else current = current.myRight;
+		           if (bits == 0) 
+		        	   current = current.myLeft;
+		           else 
+		        	   current = current.myRight;
 		           if (current.myLeft == null && current.myRight == null) {
 		               if (current.myValue == PSEUDO_EOF) 
 		                   break;   // out of loop
 		               else {
-		                   out.writeBits(BITS_PER_WORD, bits);
+		                   out.writeBits(BITS_PER_WORD, current.myValue);
 		                   current = root; // start back after leaf
 		               }
 		           }
