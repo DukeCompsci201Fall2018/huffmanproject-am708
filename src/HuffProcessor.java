@@ -88,6 +88,33 @@ public class HuffProcessor {
 		HuffNode root = pq.remove();
 		return root;
 	}
+	
+	public String[] makeCodingsFromTree(HuffNode hn) {
+		String[] encodings = new String[ALPH_SIZE + 1];
+	    codingHelper(hn,"",encodings);
+
+		return null;
+		
+	}
+	
+	public void codingHelper(HuffNode node, String currPath, String[] arr) {
+		if (node.myLeft == null) {
+	        arr[node.myValue] = currPath;
+	        return;
+	   }
+		codingHelper(node.myLeft, currPath+"0",  arr);
+		codingHelper(node.myRight, currPath+"1",  arr);
+	}
+	
+	public void writeHeader(HuffNode hn, BitOutputStream out) {
+		if (hn.myLeft == null) {
+	        out.writeBits(BITS_PER_WORD +1, hn.myValue);	//DOUBLE CHECK THIS CALL
+	        return;
+	   }
+		out.writeBits(1, 0); //DOUBLE CHECK THIS CALL
+		writeHeader(hn.myLeft, out);
+		writeHeader(hn.myRight, out);
+	}
 	/**
 	 * Decompresses a file. Output file must be identical bit-by-bit to the
 	 * original.
