@@ -58,7 +58,7 @@ public class HuffProcessor {
 		
 	}
 
-	public int[] readForCounts(BitInputStream input) {
+	private int[] readForCounts(BitInputStream input) {
 		int[] freq = new int[ALPH_SIZE + 1];
 		while (true) {
 			int value = input.readBits(BITS_PER_WORD);
@@ -72,7 +72,7 @@ public class HuffProcessor {
 		return freq;
 	}
 	
-	public HuffNode makeTreeFromCounts(int[] freq) {
+	private HuffNode makeTreeFromCounts(int[] freq) {
 		PriorityQueue<HuffNode> pq = new PriorityQueue<>();
 
 		for(int index = 0; index < freq.length; index++) {
@@ -89,7 +89,7 @@ public class HuffProcessor {
 		return root;
 	}
 	
-	public String[] makeCodingsFromTree(HuffNode hn) {
+	private String[] makeCodingsFromTree(HuffNode hn) {
 		String[] encodings = new String[ALPH_SIZE + 1];
 	    codingHelper(hn,"",encodings);
 
@@ -97,7 +97,7 @@ public class HuffProcessor {
 		
 	}
 	
-	public void codingHelper(HuffNode node, String currPath, String[] arr) {
+	private void codingHelper(HuffNode node, String currPath, String[] arr) {
 		if (node.myLeft == null) {
 	        arr[node.myValue] = currPath;
 	        return;
@@ -106,7 +106,7 @@ public class HuffProcessor {
 		codingHelper(node.myRight, currPath+"1",  arr);
 	}
 	
-	public void writeHeader(HuffNode hn, BitOutputStream out) {
+	private void writeHeader(HuffNode hn, BitOutputStream out) {
 		if (hn.myLeft == null) {
 	        out.writeBits(BITS_PER_WORD +1, hn.myValue);	//DOUBLE CHECK THIS CALL
 	        return;
@@ -151,7 +151,7 @@ public class HuffProcessor {
 		out.close();
 	}
 	
-	public HuffNode readTreeHeader(BitInputStream in) {
+	private HuffNode readTreeHeader(BitInputStream in) {
 		int bit = in.readBits(1);
 		if (bit == -1) {
 			throw new HuffException("bottom error illegal header starts with " +bit);
@@ -168,7 +168,7 @@ public class HuffProcessor {
 
 	}
 	
-	public void readCompressBits(HuffNode root, BitInputStream input, BitOutputStream out) {
+	private void readCompressBits(HuffNode root, BitInputStream input, BitOutputStream out) {
 		HuffNode current = root; 
 		   while (true) {
 		       int bits = input.readBits(1);
