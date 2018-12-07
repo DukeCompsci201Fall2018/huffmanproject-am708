@@ -72,20 +72,22 @@ public class HuffProcessor {
 		return freq;
 	}
 	
+	//Wrong
 	private HuffNode makeTreeFromCounts(int[] freq) {
 		PriorityQueue<HuffNode> pq = new PriorityQueue<>();
 
-		for(int index = 0; index < freq.length; index++) {
-		    pq.add(new HuffNode(index,freq[index],null,null));
+		for(int index = 0; index < freq.length; index++) { //
+			if (freq[index] >0)
+				pq.add(new HuffNode(index,freq[index],null,null));
 		}
 
 		while (pq.size() > 1) {
 		    HuffNode left = pq.remove();
 		    HuffNode right = pq.remove();
-		    HuffNode t = new HuffNode(0,left.myWeight + right.myWeight, left, right);
+		    HuffNode t = new HuffNode(-1,left.myWeight + right.myWeight, left, right); //
 		    pq.add(t);
 		}
-		HuffNode root = pq.remove();
+		HuffNode root = pq.remove(); 
 		return root;
 	}
 	
