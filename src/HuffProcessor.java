@@ -93,7 +93,7 @@ public class HuffProcessor {
 		String[] encodings = new String[ALPH_SIZE + 1];
 	    codingHelper(hn,"",encodings);
 
-		return null;
+		return encodings;
 		
 	}
 	
@@ -114,16 +114,20 @@ public class HuffProcessor {
 		out.writeBits(1, 0); //DOUBLE CHECK THIS CALL
 		writeHeader(hn.myLeft, out);
 		writeHeader(hn.myRight, out);
-		
-		//WRITE THE MAGIC NUMBER DUMMY
-		//WRITE MAGIC NUMBER
-		//WRITE MAGIC NUMBER
-		//WRITE MAGIC NUMBER
-		//WRITE MAGIC NUMBER
 	}
 
-	private void writeCompressedBits(String[] codings, BitInputStream in, BitOutputStream out) {
+	private void writeCompressedBits(String[] encodings, BitInputStream in, BitOutputStream out) {
 		
+		while (true) {
+			int bits = in.readBits(BITS_PER_WORD);
+			if (bits == -1) {
+				break;
+			}
+			String code = encodings[bits];
+			out.writeBits(code.length(), Integer.parseInt(code,2));
+		}	
+		String code = encodings[PSEUDO_EOF];
+		out.writeBits(code.length(), Integer.parseInt(code,2));			
 	}
 
 	/**
@@ -137,13 +141,11 @@ public class HuffProcessor {
 	 */
 	public void decompress(BitInputStream in, BitOutputStream out){
 
-		//System.out.println("working at line 65");
 		int bits = in.readBits(BITS_PER_INT);
 		if (bits != HUFF_TREE) {
 			throw new HuffException("(top error) illegal header starts with " +bits);
 		}
 		
-		//System.out.println("working at line 70");
 		HuffNode root = readTreeHeader(in);
 		readCompressBits(root,in,out);
 		out.close();
@@ -189,18 +191,4 @@ public class HuffProcessor {
 		       }
 		   }
 	}
-	/*
-	 * while (true){
-			int val = in.readBits(BITS_PER_WORD);
-			if (val == -1) break;
-			out.writeBits(BITS_PER_WORD, val);
-		}
-		out.close();
-		while (true){
-			int val = in.readBits(BITS_PER_WORD);
-			if (val == -1) break;
-			out.writeBits(BITS_PER_WORD, val);
-		}
-		out.close();
-	 */
 }
