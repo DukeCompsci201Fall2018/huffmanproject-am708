@@ -104,12 +104,13 @@ public class HuffProcessor {
 	        arr[node.myValue] = currPath;
 	        return;
 	   }
-		codingHelper(node.myLeft, "0"+currPath,  arr);
-		codingHelper(node.myRight, "1"+currPath,  arr);
+		codingHelper(node.myLeft, currPath+"0",  arr); //Possibly switch where you place the number
+		codingHelper(node.myRight, currPath+"1",  arr);
 	}
 	
 	private void writeHeader(HuffNode hn, BitOutputStream out) {
-		if (hn.myLeft == null) {
+		if (hn.myLeft == null && hn.myRight ==null) {
+			out.writeBits(1, 1);
 	        out.writeBits(BITS_PER_WORD +1, hn.myValue);	//DOUBLE CHECK THIS CALL
 	        return;
 		}
