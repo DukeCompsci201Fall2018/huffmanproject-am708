@@ -75,9 +75,8 @@ public class HuffProcessor {
 	private HuffNode makeTreeFromCounts(int[] freq) {
 		PriorityQueue<HuffNode> pq = new PriorityQueue<>();
 
-		pq.add(new HuffNode(PSEUDO_EOF,freq[PSEUDO_EOF],null,null));
 		for(int index = 0; index < freq.length; index++) { //
-			if (freq[index] > 0 && index != PSEUDO_EOF)
+			if (freq[index] > 0)
 				pq.add(new HuffNode(index,freq[index],null,null));
 		}
 
@@ -101,19 +100,19 @@ public class HuffProcessor {
 	}
 	
 	private void codingHelper(HuffNode node, String currPath, String[] arr) {
-		if (node.myLeft == null) {
+		if (node.myLeft == null && node.myRight == null) {
 	        arr[node.myValue] = currPath;
 	        return;
 	   }
-		codingHelper(node.myLeft, currPath+"0",  arr);
-		codingHelper(node.myRight, currPath+"1",  arr);
+		codingHelper(node.myLeft, "0"+currPath,  arr);
+		codingHelper(node.myRight, "1"+currPath,  arr);
 	}
 	
 	private void writeHeader(HuffNode hn, BitOutputStream out) {
 		if (hn.myLeft == null) {
 	        out.writeBits(BITS_PER_WORD +1, hn.myValue);	//DOUBLE CHECK THIS CALL
 	        return;
-	   }
+		}
 		out.writeBits(1, 0); //DOUBLE CHECK THIS CALL
 		writeHeader(hn.myLeft, out);
 		writeHeader(hn.myRight, out);
